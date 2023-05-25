@@ -8,6 +8,21 @@ from app.schemas import TileSizes, UserRequest
 from app.data_loader import DataLoader
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 logger = logging.getLogger(__name__)
 
 #<TODO>Check that file is not infected and maxfile size image is valid. tile_sizes: List[TileSizes],
