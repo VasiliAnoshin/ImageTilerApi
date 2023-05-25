@@ -2,31 +2,75 @@
 import os
 from PIL import Image
 import logging 
+from fastapi import UploadFile
 
 logger = logging.getLogger(__name__)
+
+class ImageValidationException(Exception):
+    def __init__(self, status_code, detail):
+        self.status_code = status_code
+        self.detail = detail
+        super().__init__(detail)
 
 class PanoramicImage:
     MAX_IMAGE_SIZE = 1 * 1024 * 1024 * 1024  # 1GB
 
-    def __init__(self, file, image_id:str, user_id:int, tile_sizes:list):
+    def __init__(self, file:UploadFile, image_id:str, user_id:int, tile_sizes:list)->None:
+        """ 
+        Initializes an instance of the class.
+        Args:
+            file: The file object representing the image file.
+            image_id (str): The unique identifier for the image.
+            user_id (int): The identifier for the user associated with the image.
+            tile_sizes (list): A list of tile sizes for the image.
+
+        """
         self.file = file
         self.image_id = image_id
         self.user_id = user_id
         self.tile_sizes = tile_sizes
         self.size_to_img_col = {}
 
-    def _validate_image(self):
-        if self.file.content_type.startswith("image/"):
-            try:
-                if self.file.size > PanoramicImage.MAX_IMAGE_SIZE:
-                    raise Exception(status_code=400, detail="Image size exceeds the limit of 1GB.")
-                return True
-            except Exception:
-                raise Exception(status_code=400, detail="Unable to determine image size.")
-        else:
-            raise Exception(status_code=400, detail="Invalid file format. Only images are allowed.")
+    def _validate_image(self)->bool:
+        """
+        Validates the image file.
 
-    def upload_image_handler(self):
+        Raises:
+            ImageValidationException: If the file format is invalid or the image size exceeds the limit.
+
+        Returns:
+            bool: True if the image is valid.
+
+        """
+        if self.file is None:
+            raise ImageValidationException(status_code=400, detail='No file found')
+        
+        if not self.file.content_type.startswith("image/"):
+            raise ImageValidationException(status_code=400, detail="Invalid file format. Only images are allowed.")
+
+        try:
+            if self.file.size > PanoramicImage.MAX_IMAGE_SIZE:
+                raise ImageValidationException(status_code=400, detail="Image size exceeds the limit of 1GB.")
+        except Exception:
+            raise ImageValidationException(status_code=400, detail="Unable to determine image size.")
+
+        return True
+
+    def upload_image_handler(self) -> None:
+        """
+        Handles the upload of an image.
+
+        This method performs the following steps:
+        1. Validates the image file.
+        2. Opens the image.
+        3. Divides the image into tiles based on the specified tile sizes.
+        4. Saves the original image.
+        5. Saves the tiles.
+
+        Returns:
+            None
+
+        """
         logger.info('Image validator ... ')
         if self._validate_image():
             logger.info('Open image ... ')
@@ -40,8 +84,15 @@ class PanoramicImage:
             logger.info('Save tiles ... ')
             self.save_tiles()
 
-    def save_original_image(self):
-        """Save the panoramic origin image """
+    def save_original_image(self)->None:
+        """Save the panoramic origin image 
+        
+        Raises:
+            Exception: If an error occurs while saving the file.
+        
+        Returns:
+            None
+        """
         try:
             user_dir = os.path.join(os.getcwd(), "app", "Data", f"{self.user_id}")
             image_dir = os.path.join(user_dir, self.image_id)
@@ -60,7 +111,18 @@ class PanoramicImage:
         except Exception as ex:
             raise ex
 
-    def save_tiles(self):
+    def save_tiles(self) -> None:
+        """
+        Saves the tiles of the image to individual image files.
+
+        The method performs the following steps:
+        1. Creates a directory to store the tiles.
+        2. Saves each tile as an individual image file within the directory.
+
+        Returns:
+            None
+
+        """
         cur_dir = os.path.join(os.getcwd(), "app", "Data", f"{self.user_id}", self.image_id)
         for tile_size in self.size_to_img_col:
             logger.info('Create a directory to store the tiles')
@@ -78,7 +140,18 @@ class PanoramicImage:
 
        
 
-    def _divide_into_tiles(self, image, tile_size):
+    def _divide_into_tiles(self, image:Image, tile_size:tuple)->list:
+        """
+        Divides an image into tiles of the specified size.
+
+        Args:
+            image: The image to be divided into tiles.
+            tile_size (tuple): The size of each tile in the format (height, width).
+
+        Returns:
+            list: A list of image tiles.
+
+        """
         width, height = image.size
         tiles = []
 
