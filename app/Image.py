@@ -152,6 +152,11 @@ class PanoramicImage:
             list: A list of image tiles.
 
         """
+        if image is None:
+            raise ValueError('provided image for tiles divide is None')
+        if type(tile_size) is not tuple:
+            raise ValueError(f'provided tile size expected to be tuple like (256,256) recieved as {tile_size}')
+        
         width, height = image.size
         tiles = []
 
