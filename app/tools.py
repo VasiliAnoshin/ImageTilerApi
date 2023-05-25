@@ -10,7 +10,7 @@ class Tools:
         ...
     
     @staticmethod
-    def genrate_image_id(user_id:int)->str:
+    def genrate_image_id(user_id:str)->str:
         logger.info('Generate image id that will be used as identificator for image.')
         return str(f'{user_id}_{uuid.uuid4()}')
     
@@ -30,6 +30,8 @@ class Tools:
         Returns:
             bool: True if the format is valid, False otherwise.
         """
+        if not isinstance(tiles, str):
+            raise ValueError("Invalid input: 'tiles' must be a string.")
         pattern = r"^\d+x\d+$"
         return re.match(pattern, tiles) is not None
 

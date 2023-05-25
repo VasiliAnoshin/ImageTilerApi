@@ -12,12 +12,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
     "http://localhost",
-    "http://localhost:8080",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -74,24 +74,7 @@ def get_tiled_images(user_id:str, image_id:str, tiles:str):
     ---------------
     Returns:
     ---------------
-        {
-        "tiles": [
-            {
-            "id": "0",
-            "name": "0.png",
-            "img": {}
-            },
-            {
-            "id": "1",
-            "name": "1.png",
-            "img": {}
-            },
-            {
-            "id": "10",
-            "name": "10.png",
-            "img": {}
-            }
-        }
+        zip_file with tiled images
     ---------------
     Raises:
     ---------------
