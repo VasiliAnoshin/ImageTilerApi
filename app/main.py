@@ -14,8 +14,8 @@ def upload_panoramic_image(file: UploadFile = File(...), user_id: str = Form("us
         if file is None:
             raise HTTPException(status_code=400, detail='No file found')
         image_id = str(uuid.uuid4())
-        img = PanoramicImage(file, image_id, user_id) 
-        img.upload_image()       
+        img = PanoramicImage(file, image_id, user_id, [(256, 256)])
+        img.upload_image_handler()       
         #Add format check.
         #Check that file is not infected and maxfile size image is valid
         #Generate image id and provide to user
