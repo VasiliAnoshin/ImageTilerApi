@@ -1,5 +1,5 @@
 from typing import Union
-from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form
+from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form, Response
 from app.image import PanoramicImage
 from app.log import *
 from app.tools import Tools
@@ -104,7 +104,14 @@ def get_tiled_images(user_id:str, image_id:str, tiles:str):
     """
     try:
         logger.debug(f'Tiled images request ... img_id: {image_id}, user_id: {user_id}, tiles: {tiles}')
-        return DataLoader.get_tiles_by_image_id(user_id=user_id, image_id=image_id, tiles=tiles)
+        zip_data= DataLoader.get_tiles_by_image_id(user_id=user_id, image_id=image_id, tiles=tiles)
+        # Return the ZIP file data and headers
+        response = Response(
+            content=zip_data.getvalue(), 
+            headers={
+            "Content-Type": "application/zip",
+            "Content-Disposition": f"attachment; filename=tiles.zip"})
+        return response
     except Exception as ex:
-        logger.info(f'Unexpected error.  Exception: {ex.args[0]} ')
+        logger.info(f'Unexpected error.  Exception: {ex.args[0]}')
         raise HTTPException(status_code=500, detail=ex.args[0])

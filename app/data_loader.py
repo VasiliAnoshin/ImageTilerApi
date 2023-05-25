@@ -37,14 +37,6 @@ class DataLoader:
                         # Add each file to the ZIP archive
                         zip_file.writestr(f"{i}.png", tile_data)
 
-            # Set the appropriate headers for returning a ZIP file
-            headers = {
-                "Content-Type": "application/zip",
-                "Content-Disposition": f"attachment; filename=tiles.zip"
-            }
-
-            # Return the ZIP file data and headers
-            response = Response(content=zip_data.getvalue(), headers=headers)
-            return response
+            return zip_data
         raise ImageNotFound(status_code=404, detail='Image not found')
 
