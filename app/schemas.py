@@ -7,3 +7,8 @@ class FileUpload(BaseModel):
 class TileSizes(BaseModel):
     width: int
     height: int
+
+class UserRequest(BaseModel):
+    user_id: str
+    image_id:str
+    tiles: list

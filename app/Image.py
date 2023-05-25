@@ -3,6 +3,7 @@ import os
 from PIL import Image
 import logging 
 from fastapi import UploadFile
+from app.tools import Tools
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,9 @@ class PanoramicImage:
         """
         if self.file is None:
             raise ImageValidationException(status_code=400, detail='No file found')
+        
+        if not Tools.allowed_file(self.file.filename):
+            raise ImageValidationException(status_code=400, detail='Provided format not supported')
         
         if not self.file.content_type.startswith("image/"):
             raise ImageValidationException(status_code=400, detail="Invalid file format. Only images are allowed.")
