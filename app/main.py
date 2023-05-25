@@ -1,11 +1,11 @@
 from typing import Union
 from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form
-from app.Image import PanoramicImage
+from app.image import PanoramicImage
 from app.log import *
 from app.tools import Tools
 from typing import Optional, List, Tuple
 from app.schemas import TileSizes, UserRequest
-from app.DataLoader import DataLoader
+from app.data_loader import DataLoader
 app = FastAPI()
 
 logger = logging.getLogger(__name__)
@@ -59,11 +59,28 @@ def get_tiled_images(user_id:str, image_id:str, tiles:str):
     ---------------
     Returns:
     ---------------
-        The tiled images.
+        {
+        "tiles": [
+            {
+            "id": "0",
+            "name": "0.png",
+            "img": {}
+            },
+            {
+            "id": "1",
+            "name": "1.png",
+            "img": {}
+            },
+            {
+            "id": "10",
+            "name": "10.png",
+            "img": {}
+            }
+        }
     ---------------
     Raises:
     ---------------
-        HTTPException: If there is an unexpected error.
+        HTTPException
     --------------- 
     Example:
     ---------------

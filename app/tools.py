@@ -50,6 +50,8 @@ class Tools:
             raise ValueError('user_id cant be empty')
         if not image_id:
             raise ValueError('image_id cant be empty')
+        if not tiles:
+            raise ValueError('tiles cant be empty')
         if not Tools.is_valid_tiles_format(tiles):
             raise Exception('Provided tiles not in correct format. Correct example: 256x256')
         tils = str(f'{tiles} tiles')
