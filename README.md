@@ -79,3 +79,41 @@ ImageTilerApi/
 - [ ] Slack
 - [x] Logs
 - [ ] Mail
+
+# Implementation details : 
+Code implemented using Python 3.9 + Fast API framework. 
+Run the server with: 
+```bash
+        uvicorn main:app --reload
+```
+For more infomraion visit: https://fastapi.tiangolo.com/
+Assumptions: 
+- In the system exist users and each user has id.
+- For simpicity system recieve only images in following formats: jpg, jpeg, png.
+- Each image recieve id based on <userId_UUID>. UUID is 128-bit number used to identify information in computer systems.
+UUId has a very low probability of getting collisions. For more information: https://en.wikipedia.org/wiki/Universally_unique_identifier
+- Currenly system work only with 256x256 sizes. But there exist a posibility to change provided sizes. Such that if in the future 
+you will need to handle additional size like 64x64 the main logic that calculate and save tiles handle this case.
+- The system performs a check to ensure that the size of the file does not exceed 1 gigabyte (1GB)
+
+
+The system incorporates a basic cropping algorithm that is designed to crop images to a fixed requested size of 256x256 pixels.
+Improvements: If user add the same picture twice but with different tiles it should save only new tiles, without original image. 
+How can we do it: We can calculate hash for current image using SHA-1 or MD-5 and save it next to image_id/DB. The same images has the same hash. 
+
+/get_tiled_images endpoint: retrurned as zip file. 
+
+Security: 
+- Access control: users.
+- User can't upload large files
+- Basic CORS implemented
+- Input Validation
+- only valid types accepted
+- logs were added to check upload activity.  In the future worth to scan logs in real time.
+
+Improvements: 
+- Rate Limiter to prevent DOS atacks/restrict number of tryes per unit of time.
+- Scan for malicious content
+
+Tests:
+- Implemented partuculary 
